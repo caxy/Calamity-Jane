@@ -3,6 +3,11 @@
 use Jira\JiraClient;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class JiraClientProvider implements ServiceProviderInterface
 {
@@ -18,5 +23,35 @@ class JiraClientProvider implements ServiceProviderInterface
 
             return $client;
         };
+
+        $pimple['jira.ticket.command'] = function (Container $c) {
+            $command = new Command('jira:ticket');
+            $command->addArgument('project');
+            $command->addArgument('summary', InputArgument::IS_ARRAY);
+            $command->setCode(function (InputInterface $input, OutputInterface $output) use ($c) {
+                /** @var \Jira\JiraClient $client */
+                $client = $c['jira.client'];
+                $project = $input->getArgument('project');
+                $summary = $input->getArgument('summary');
+
+                $issue = new \Jira\Remote\RemoteIssue();
+                $issue
+                    ->setProject($project)
+                    ->setType(1)
+                    ->setSummary(implode(' ', $summary))
+                ;
+
+                $client->create($issue);
+                $output->write('created '.$issue->getId());
+            });
+
+            return $command;
+        };
+
+        $pimple->extend('console', function (Application $application, Container $c) {
+            $application->add($c['jira.ticket.command']);
+
+            return $application;
+        });
     }
 }

@@ -6,11 +6,9 @@ use MainlyCode\Xmpp\Connection;
 use MainlyCode\Xmpp\JabberId;
 use Pimple\Container;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -37,36 +35,6 @@ class ConsoleServiceProvider implements \Pimple\ServiceProviderInterface
 
             return $application;
         };
-
-        $pimple['command.jira.ticket'] = function (Container $c) {
-            $command = new Command('jira:ticket');
-            $command->addArgument('project');
-            $command->addArgument('summary', InputArgument::IS_ARRAY);
-            $command->setCode(function (InputInterface $input, OutputInterface $output) use ($c) {
-                /** @var \Jira\JiraClient $client */
-                $client = $c['jira.client'];
-                $project = $input->getArgument('project');
-                $summary = $input->getArgument('summary');
-
-                $issue = new \Jira\Remote\RemoteIssue();
-                $issue
-                  ->setProject($project)
-                  ->setType(1)
-                  ->setSummary(implode(' ', $summary))
-                ;
-
-                $client->create($issue);
-                $output->write('created '.$issue->getId());
-            });
-
-            return $command;
-        };
-
-        $pimple->extend('console', function (Application $application, Container $c) {
-            $application->add($c['command.jira.ticket']);
-
-            return $application;
-        });
 
         $pimple['console.input'] = function (Container $c) {
             return new ArgvInput();
