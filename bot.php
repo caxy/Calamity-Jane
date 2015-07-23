@@ -10,9 +10,8 @@ $pimple = new \Pimple\Container();
 $pimple['event_dispatcher'] = function () {
     return new \Symfony\Component\EventDispatcher\EventDispatcher();
 };
-$pimple['loop'] = function () {
-    return \React\EventLoop\Factory::create();
-};
+$pimple->register(new EventLoopServiceProvider());
+$pimple->register(new SocketClientServiceProvider());
 $pimple->register(new HipchatRESTClientProvider(), array(
     'hipchat_v1_token' => $_SERVER['HIPCHAT_V1_TOKEN'],
     'hipchat_v2_token' => $_SERVER['HIPCHAT_V2_TOKEN'],
@@ -37,7 +36,7 @@ $pimple['hipchat.cache.user'] = function (\Pimple\Container $c) {
     return new \React\Cache\ArrayCache();
 };
 
-$pimple->extend('hipchat.jabber.client', function (\MainlyCode\HipChat\Client $client, \Pimple\Container $c) {
+$pimple->extend('hipchat.jabber.client', function (Client $client, \Pimple\Container $c) {
     $logger = $c['logger'];
 
     $events = array('connect.before', 'connect.after');

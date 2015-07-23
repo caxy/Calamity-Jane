@@ -1,6 +1,5 @@
 <?php
 
-use MainlyCode\HipChat\Client;
 use MainlyCode\Stream\WriteStream;
 use MainlyCode\Xmpp\Connection;
 use MainlyCode\Xmpp\JabberId;
