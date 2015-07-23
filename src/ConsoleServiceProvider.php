@@ -94,10 +94,28 @@ class ConsoleServiceProvider implements ServiceProviderInterface
         });
 
         $pimple->extend('hipchat.jabber.client', function (Client $client, Container $c) {
+            /**
+             * This listener uses a message as the input of a Symfony console application.
+             */
             $client->on('xmpp.message.received', function (\SimpleXMLElement $message, WriteStream $write, Connection $connection) use ($client, $c) {
+
+                // Messages without a body might be "typing" indicators, and they're not helpful here.
+                if (!$message->body->count()) {
+                    return;
+                }
+
                 $matches = array();
-                $name = strtolower($c['hipchat.jabber.nickname']);
-                if (preg_match('/\@'.$name.' ?(.*)$/i', $message->body, $matches)) {
+                $type = (string) $message->attributes()['type'];
+
+                // In private chat, you don't need to use the bot's name.
+                if ($type === 'chat') {
+                    $pattern = '/^(.*)$/i';
+                } elseif ($type === 'groupchat') {
+                    $name = strtolower($c['hipchat.jabber.nickname']);
+                    $pattern = '/\@'.$name.' ?(.*)$/i';
+                }
+
+                if (isset($pattern) && preg_match($pattern, $message->body, $matches)) {
                     $logger = $c['logger'];
                     $logger->info('Running command', array('input' => $matches[1], 'message' => $message, 'connection' => $connection));
                     $input = new StringInput($matches[1]);
@@ -108,7 +126,11 @@ class ConsoleServiceProvider implements ServiceProviderInterface
                     $application = $c['console'];
                     $exitCode = $application->run($input, $output);
 
-                    $write->xmppMessage(new JabberId($message['from']), $c['hipchat.jabber_id'], '/quote '.$output->fetch());
+                    if ($type === 'groupchat') {
+                        $write->xmppMessage(new JabberId($message['from']), $c['hipchat.jabber_id'], '/quote '.$output->fetch());
+                    } elseif ($type === 'chat') {
+                        $write->xmppMessageTo(new JabberId($message['from']), $c['hipchat.jabber_id'], '/quote '.$output->fetch());
+                    }
                 }
             });
 
