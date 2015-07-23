@@ -41,8 +41,9 @@ class JiraClientProvider implements ServiceProviderInterface
                     ->setSummary(implode(' ', $summary))
                 ;
 
-                $client->create($issue);
-                $output->write('created '.$issue->getId());
+                /** @var \Jira\Remote\RemoteIssue $issue */
+                $issue = $client->create($issue);
+                $output->write('created '.$issue->getKey().': '. $c['jira.url'].'/browse/'. $issue->getKey());
             });
 
             return $command;
