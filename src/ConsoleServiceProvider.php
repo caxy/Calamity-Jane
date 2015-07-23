@@ -126,10 +126,15 @@ class ConsoleServiceProvider implements ServiceProviderInterface
                     $application = $c['console'];
                     $exitCode = $application->run($input, $output);
 
+                    $messageText = $output->fetch();
+                    if (strpbrk($message, "\n\r")) {
+                        $messageText = '/quote '. $messageText;
+                    }
+
                     if ($type === 'groupchat') {
-                        $write->xmppMessage(new JabberId($message['from']), $c['hipchat.jabber_id'], '/quote '.$output->fetch());
+                        $write->xmppMessage(new JabberId($message['from']), $c['hipchat.jabber_id'], $messageText);
                     } elseif ($type === 'chat') {
-                        $write->xmppMessageTo(new JabberId($message['from']), $c['hipchat.jabber_id'], '/quote '.$output->fetch());
+                        $write->xmppMessageTo(new JabberId($message['from']), $c['hipchat.jabber_id'], $messageText);
                     }
                 }
             });
