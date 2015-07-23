@@ -1,6 +1,5 @@
 <?php
 
-use MainlyCode\HipChat\Client;
 use MainlyCode\HipChat\Connection;
 use MainlyCode\Xmpp\JabberId;
 
@@ -23,7 +22,7 @@ class HipchatJabberProvider implements \Pimple\ServiceProviderInterface
             return new Connection($c['hipchat.jabber_id'], $c['hipchat.jabber.nickname'], $c['hipchat.jabber.password']);
         };
         $pimple['hipchat.jabber.client'] = function (\Pimple\Container $c) {
-            return new Client($c['event_loop']);
+            return new Client($c['event_loop'], $c['socket_client.connector']);
         };
     }
 }
