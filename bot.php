@@ -10,9 +10,7 @@ $pimple = new \Pimple\Container();
 $pimple['event_dispatcher'] = function () {
     return new \Symfony\Component\EventDispatcher\EventDispatcher();
 };
-$pimple['loop'] = function () {
-    return \React\EventLoop\Factory::create();
-};
+$pimple->register(new EventLoopServiceProvider());
 $pimple->register(new HipchatRESTClientProvider(), array(
     'hipchat_v1_token' => $_SERVER['HIPCHAT_V1_TOKEN'],
     'hipchat_v2_token' => $_SERVER['HIPCHAT_V2_TOKEN'],
