@@ -5,7 +5,9 @@ require 'vendor/autoload.php';
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
-$pimple = new \Pimple\Container();
+$pimple = new \Pimple\Container(array(
+    'stats.start' => microtime(true),
+));
 
 $pimple['event_dispatcher'] = function () {
     return new \Symfony\Component\EventDispatcher\EventDispatcher();
