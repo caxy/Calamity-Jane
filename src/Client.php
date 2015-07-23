@@ -1,5 +1,7 @@
 <?php
 
+use Evenement\EventEmitterInterface;
+use Evenement\EventEmitterTrait;
 use MainlyCode\Stream\ReadStream;
 use MainlyCode\Stream\WriteStream;
 use MainlyCode\Xmpp\Connection;
@@ -10,8 +12,10 @@ use React\SocketClient\ConnectorInterface;
 use React\SocketClient\SecureStream;
 use React\Stream\Stream;
 
-class Client extends \Evenement\EventEmitter
+class Client implements EventEmitterInterface
 {
+    use EventEmitterTrait;
+
     private $connector;
     private $loop;
     private $readStream;

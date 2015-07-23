@@ -4,6 +4,7 @@ use MainlyCode\Stream\WriteStream;
 use MainlyCode\Xmpp\Connection;
 use MainlyCode\Xmpp\JabberId;
 use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ConsoleServiceProvider implements \Pimple\ServiceProviderInterface
+class ConsoleServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $pimple)
     {
