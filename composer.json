@@ -1,32 +1,82 @@
 {
+    "autoload": {
+        "psr-4": { "": "src/" }
+    },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/bangpound/hipchat-client-react.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/bangpound/composer-dotenv.git"
         }
     ],
     "require": {
+        "symfony/symfony": "~2.7",
+        "doctrine/orm": "~2.2,>=2.2.3,<2.5",
+        "doctrine/dbal": "<2.5",
+        "doctrine/doctrine-bundle": "~1.4",
+        "symfony/assetic-bundle": "~2.3",
+        "symfony/swiftmailer-bundle": "~2.3",
+        "symfony/monolog-bundle": "~2.4",
+        "sensio/distribution-bundle": "~4.0",
+        "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
+        "incenteev/composer-parameter-handler": "~2.0",
+        "bangpound/composer-dotenv": "~1.0@dev",
         "hipchat/hipchat-php": "^1.4",
         "mainlycode/hipchat-client-react": "dev-develop",
-        "monolog/monolog": "^1.15",
         "pimple/pimple": "~3.0",
-        "symfony/console": "^2.7",
-        "symfony/event-dispatcher": "^2.7",
-        "symfony/monolog-bridge": "^2.7",
         "gorkalaucirica/hipchat-v2-api-client": "^1.4",
         "cpliakas/jira": "^1.0",
         "react/cache": "^0.4.0",
-        "symfony/serializer": "^2.7",
-        "vlucas/phpdotenv": "^2.0",
         "react/socket-client": "^0.4.3",
         "clue/stdio-react": "^0.3.0"
     },
     "require-dev": {
-        "symfony/var-dumper": "^2.7"
+        "sensio/generator-bundle": "~2.3"
     },
-    "autoload": {
-        "psr-4": {
-            "": "src"
+    "scripts": {
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ],
+        "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+        ]
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-bin-dir": "bin",
+        "symfony-var-dir": "var",
+        "symfony-web-dir": "web",
+        "symfony-assets-install": "relative",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml",
+            "env-map": {
+                "jira_url": "JIRA_URL",
+                "jira_username": "JIRA_USERNAME",
+                "jira_password": "JIRA_PASSWORD",
+                "hipchat_v1_token": "HIPCHAT_V1_TOKEN",
+                "hipchat_v2_token": "HIPCHAT_V2_TOKEN",
+                "hipchat_jabber_id": "HIPCHAT_JABBER_ID",
+                "hipchat_jabber_nickname": "HIPCHAT_JABBER_NICKNAME",
+                "hipchat_jabber_password": "HIPCHAT_JABBER_PASSWORD"
+            }
         }
     }
 }
