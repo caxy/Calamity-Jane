@@ -29,7 +29,6 @@
         "pimple/pimple": "~3.0",
         "gorkalaucirica/hipchat-v2-api-client": "^1.4",
         "cpliakas/jira": "^1.0",
-        "react/cache": "^0.4.0",
         "react/socket-client": "^0.4.3",
         "clue/stdio-react": "^0.3.0"
     },
