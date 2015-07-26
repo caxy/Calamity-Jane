@@ -1,84 +1,35 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+set_time_limit(0);
 
-$dotenv = new Dotenv\Dotenv(dirname(__DIR__));
-$dotenv->load();
+require_once __DIR__.'/../var/bootstrap.php.cache';
+require_once __DIR__.'/../app/AppKernel.php';
 
-$pimple = new \Pimple\Container(array(
-    'stats.start' => microtime(true),
-));
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Debug\Debug;
+
+$input = new ArgvInput();
+$env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
+$debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', '')) && $env !== 'prod';
+
+if ($debug) {
+    Debug::enable();
+}
+
+$kernel = new AppKernel($env, $debug);
+$kernel->boot();
+$container = $kernel->getContainer();
+
+$pimple = $container->get('bot_container');
+$pimple['stats.start'] = microtime(true);
 
 $pimple['event_dispatcher'] = function () {
     return new \Symfony\Component\EventDispatcher\EventDispatcher();
 };
-$pimple->register(new EventLoopServiceProvider());
-$pimple->register(new SocketClientServiceProvider());
-$pimple->register(new HipchatRESTClientProvider(), array(
-    'hipchat_v1_token' => $_SERVER['HIPCHAT_V1_TOKEN'],
-    'hipchat_v2_token' => $_SERVER['HIPCHAT_V2_TOKEN'],
-));
-$pimple->register(new HipchatJabberProvider(), [
-  'hipchat.jabber.id' => $_SERVER['HIPCHAT_JABBER_ID'],
-  'hipchat.jabber.nickname' => $_SERVER['HIPCHAT_JABBER_NICKNAME'],
-  'hipchat.jabber.password' => $_SERVER['HIPCHAT_JABBER_PASSWORD'],
-]);
-$pimple->register(new ConsoleServiceProvider());
-$pimple->register(new MonologServiceProvider(), array(
-  'monolog.logfile' => 'php://stderr',
-));
-$pimple->register(new SerializerServiceProvider());
-$pimple->register(new JiraClientProvider(), array(
-    'jira.url' => $_SERVER['JIRA_URL'],
-    'jira.username' => $_SERVER['JIRA_USERNAME'],
-    'jira.password' => $_SERVER['JIRA_PASSWORD'],
-));
 
 $pimple['hipchat.cache.user'] = function (\Pimple\Container $c) {
     return new \React\Cache\ArrayCache();
 };
-
-$pimple->extend('hipchat.jabber.client', function (Client $client, \Pimple\Container $c) {
-    $logger = $c['logger'];
-
-    $events = array('connect.before', 'connect.after');
-    foreach ($events as $event) {
-        $client->on($event, function (\MainlyCode\Xmpp\Connection $connection) use ($logger, $event) {
-            $logger->debug($event, array('connection' => $connection));
-        });
-    }
-
-    $client->on('connect.error', function ($message, \MainlyCode\Xmpp\Connection $connection) use ($logger) {
-        $logger->error('connect.error', array('message' => $message, 'connection' => $connection));
-    });
-
-    $client->on('xmpp.received', function ($message) use ($logger) {
-        $logger->debug('xmpp.received', array('message' => $message));
-    });
-
-    $client->on('xmpp.sent', function ($message) use ($logger) {
-        $logger->debug('xmpp.sent', array('message' => $message));
-    });
-
-    $client->on('xmpp.session.established', function ($message, \MainlyCode\Stream\WriteStream $write) use ($c) {
-        // Probably not necessary.
-        $write->xmppPresence($c['hipchat.jabber_id']);
-
-        // This joins the Dev room.
-        $write->xmppJoin($c['hipchat.jabber_id'], new \MainlyCode\Xmpp\JabberId('14868_operation_wild_ocelot@conf.hipchat.com'), 'Calamity Jane');
-
-        // This call turns up too much data for the buffer to hold, so the XML does not parse.
-        // $write->xmppDiscoverRooms($c['hipchat.jabber_id'], 'conf.hipchat.com');
-    });
-
-    // This logs all Jabber stanzas.
-    $client->on('xmpp.stanza.received', function (\SimpleXMLElement $message, \MainlyCode\Stream\WriteStream $write, \MainlyCode\Xmpp\Connection $connection) use ($c) {
-        $logger = $c['logger'];
-        $logger->warning($message->getName(), $c['serializer']->decode($message->asXML(), 'xml'));
-    });
-
-    return $client;
-});
 
 $pimple['hipchat.jabber.client']->run($pimple['hipchat.jabber.connection']);

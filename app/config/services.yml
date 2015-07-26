@@ -4,6 +4,91 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+    bot_container:
+        class: Pimple\Container
+        calls:
+          - method: register
+            arguments:
+              - @event_loop_service_provider
+
+          - method: register
+            arguments:
+              - @socket_client_service_provider
+
+          - method: register
+            arguments:
+              - @hipchat_jabber_service_provider
+              -
+                hipchat.jabber.id: %hipchat_jabber_id%
+                hipchat.jabber.nickname: %hipchat_jabber_nickname%
+                hipchat.jabber.password: %hipchat_jabber_password%
+
+          - method: register
+            arguments:
+              - @hipchat_rest_client_provider
+              -
+                hipchat_v1_token: %hipchat_v1_token%
+                hipchat_v2_token: %hipchat_v2_token%
+
+          - method: register
+            arguments:
+              - @console_service_provider
+
+          - method: register
+            arguments:
+              - @monolog_service_provider
+              -
+                monolog.logfile: 'php://stderr'
+
+          - method: register
+            arguments:
+              - @serializer_service_provider
+
+          - method: register
+            arguments:
+              - @jira_client_provider
+              -
+                jira.url: %jira_url%
+                jira.username: %jira_username%
+                jira.password: %jira_password%
+
+          - method: extend
+            arguments:
+              - hipchat.jabber.client
+              - @jabber_client_extension
+
+    jabber_client_extension:
+        class: JabberClientExtension
+        public: false
+
+    event_loop_service_provider:
+        class: EventLoopServiceProvider
+        public: false
+
+    socket_client_service_provider:
+        class: SocketClientServiceProvider
+        public: false
+
+    hipchat_jabber_service_provider:
+        class: HipchatJabberProvider
+        public: false
+
+    hipchat_rest_client_provider:
+        class: HipchatRESTClientProvider
+        public: false
+
+    console_service_provider:
+        class: ConsoleServiceProvider
+        public: false
+
+    monolog_service_provider:
+        class: MonologServiceProvider
+        public: false
+
+    serializer_service_provider:
+        class: SerializerServiceProvider
+        public: false
+
+    jira_client_provider:
+        class: JiraClientProvider
+        public: false
