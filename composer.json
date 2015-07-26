@@ -18,7 +18,8 @@
         "react/cache": "^0.4.0",
         "symfony/serializer": "^2.7",
         "vlucas/phpdotenv": "^2.0",
-        "react/socket-client": "^0.4.3"
+        "react/socket-client": "^0.4.3",
+        "clue/stdio-react": "^0.3.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^2.7"
