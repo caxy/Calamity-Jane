@@ -17,3 +17,12 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    jira_url: ~
+    jira_username: ~
+    jira_password: ~
+    hipchat_v1_token: ~
+    hipchat_v2_token: ~
+    hipchat_jabber_id: ~
+    hipchat_jabber_nickname: ~
+    hipchat_jabber_password: ~

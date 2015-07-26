@@ -6,6 +6,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/bangpound/hipchat-client-react.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/bangpound/composer-dotenv.git"
         }
     ],
     "require": {
@@ -19,13 +23,13 @@
         "sensio/distribution-bundle": "~4.0",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
+        "bangpound/composer-dotenv": "~1.0@dev",
         "hipchat/hipchat-php": "^1.4",
         "mainlycode/hipchat-client-react": "dev-develop",
         "pimple/pimple": "~3.0",
         "gorkalaucirica/hipchat-v2-api-client": "^1.4",
         "cpliakas/jira": "^1.0",
         "react/cache": "^0.4.0",
-        "vlucas/phpdotenv": "^2.0",
         "react/socket-client": "^0.4.3",
         "clue/stdio-react": "^0.3.0"
     },
@@ -62,7 +66,17 @@
         "symfony-web-dir": "web",
         "symfony-assets-install": "relative",
         "incenteev-parameters": {
-            "file": "app/config/parameters.yml"
+            "file": "app/config/parameters.yml",
+            "env-map": {
+                "jira_url": "JIRA_URL",
+                "jira_username": "JIRA_USERNAME",
+                "jira_password": "JIRA_PASSWORD",
+                "hipchat_v1_token": "HIPCHAT_V1_TOKEN",
+                "hipchat_v2_token": "HIPCHAT_V2_TOKEN",
+                "hipchat_jabber_id": "HIPCHAT_JABBER_ID",
+                "hipchat_jabber_nickname": "HIPCHAT_JABBER_NICKNAME",
+                "hipchat_jabber_password": "HIPCHAT_JABBER_PASSWORD"
+            }
         }
     }
 }
