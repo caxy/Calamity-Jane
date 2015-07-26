@@ -28,4 +28,3 @@ class ReactOutput extends Output
         $newline ? $this->stdio->writeln($message) : $this->stdio->write($message);
     }
 }
-

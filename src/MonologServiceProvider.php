@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Logger;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Monolog\Formatter\LineFormatter;
@@ -16,6 +17,7 @@ class MonologServiceProvider implements ServiceProviderInterface
         $app['monolog.logger.class'] = 'Monolog\Logger';
 
         $app['monolog'] = function ($app) {
+            /** @var Logger $log */
             $log = new $app['monolog.logger.class']($app['monolog.name']);
 
             $log->pushHandler($app['monolog.handler']);

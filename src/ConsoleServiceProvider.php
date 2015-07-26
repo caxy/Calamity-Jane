@@ -94,7 +94,7 @@ class ConsoleServiceProvider implements ServiceProviderInterface
         });
 
         $pimple->extend('hipchat.jabber.client', function (Client $client, Container $c) {
-            /**
+            /*
              * This listener uses a message as the input of a Symfony console application.
              */
             $client->on('xmpp.message.received', function (\SimpleXMLElement $message, WriteStream $write, Connection $connection) use ($client, $c) {
@@ -128,7 +128,7 @@ class ConsoleServiceProvider implements ServiceProviderInterface
 
                     $messageText = $output->fetch();
                     if (strpbrk($message, "\n\r")) {
-                        $messageText = '/quote '. $messageText;
+                        $messageText = '/quote '.$messageText;
                     }
 
                     if ($type === 'groupchat') {
